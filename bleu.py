@@ -14,7 +14,7 @@ class BLEU:
         return ngrams
 
     @staticmethod
-    def modified_precision(maxN, mt, refs):
+    def modified_precision(mt, refs, maxN=4):
         Ns = range(1, maxN)
         Ps = []
         for N in Ns:
@@ -65,11 +65,11 @@ class BLEU:
             return math.exp(1.0 - r/c)
 
     @staticmethod
-    def calc_bleu(maxN, mt, refs):
+    def calc_bleu(mt, refs, maxN=4):
         # mt_ngrams = BLUE.make_ngrams(mt, maxN)
         # refs_ngrams = [BLUE.make_ngrams(ref, maxN) for ref in refs]
         bp = BLEU.brevity_penalty(mt, refs)
-        return bp * math.exp(BLEU.modified_precision(maxN, mt, refs))
+        return bp * math.exp(BLEU.modified_precision(mt, refs, maxN))
 
 # hypothesis = ['a'] * 12
 # hyp_len = len(hypothesis)
