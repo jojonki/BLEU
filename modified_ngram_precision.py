@@ -1,30 +1,60 @@
 import sys
+import copy
 
 # if len(sys.argv) < 2:
 #     print('python program.py <n-gram>')
 #     sys.exit()
 
 Ns = [1, 2, 3]
+N = 1
 mt = input()
-ref = input()
+refs = []
+while True:
+    try:
+        ref = input()
+        refs.append(ref)
+    except EOFError:
+        break
 
 print('mt', mt)
-print('ref', ref)
+print('refs', refs)
 
 mt = mt.split(' ')
+
+
+def make_ngrams(sentence, N):
+    ngrams = []
+    sentence = sentence.split(' ')
+    for i in range(len(sentence) - N + 1):
+        ngrams.append(' '.join(sentence[i:i+N]))
+    return ngrams
+
+
+mt_counter = {}
+for ngram in mt:
+    if ngram not in mt_counter:
+        mt_counter[ngram] = 1
+    else:
+        mt_counter[ngram] += 1
+
+ref_counters = []
+for ref in refs:
+    counter = {}
+    ngrams = make_ngrams(ref, N)
+    for ngram in make_ngrams(ref, N):
+        if ngram not in counter:
+            counter[ngram] = 1
+        else:
+            counter[ngram] += 1
+    ref_counters.append(copy.copy(counter))
+
+clip_count = 0
+for token, mt_count in mt_counter.items():
+    max_ref_count = 0
+    for ref_counter in ref_counters:
+        if token in ref_counter:
+            max_ref_count = max(ref_counter[token], max_ref_count)
+    print('token', token, mt_count, max_ref_count)
+    clip_count += min(mt_count, max_ref_count)
 total = len(mt)
-ref = ref.split(' ')
-
-for N in Ns:
-    mt_ngrams, ref_ngrams = [], []
-    for i in range(len(mt) - N + 1):
-        mt_ngrams.append(' '.join(mt[i:i+N]))
-        ref_ngrams.append(' '.join(ref[i:i+N]))
-
-    count = 0
-    for ngram in mt_ngrams:
-        if ngram in ref_ngrams:
-            ref_ngrams.remove(ngram)
-            count += 1
-    print('P_{} = {} ({}/{})'.format(N, count/total, count, total))
-
+print('P_{} = {} ({}/{})'.format(N, clip_count/total, clip_count, total))
