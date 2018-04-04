@@ -1,6 +1,7 @@
 import sys
 import math
 import copy
+from bleu import BLEU
 
 
 mt = input()
@@ -18,18 +19,10 @@ print('Refs:', refs)
 Ns = range(1, 4)
 
 
-def make_ngrams(sentence, N):
-    ngrams = []
-    sentence = sentence.split(' ')
-    for i in range(len(sentence) - N + 1):
-        ngrams.append(' '.join(sentence[i:i+N]))
-    return ngrams
-
-
 Ps = []
 for N in Ns:
     mt_counter = {}
-    for ngram in make_ngrams(mt, N):
+    for ngram in BLEU.make_ngrams(mt, N):
         if ngram not in mt_counter:
             mt_counter[ngram] = 1
         else:
@@ -38,8 +31,8 @@ for N in Ns:
     ref_counters = []
     for ref in refs:
         counter = {}
-        ngrams = make_ngrams(ref, N)
-        for ngram in make_ngrams(ref, N):
+        ngrams = BLEU.make_ngrams(ref, N)
+        for ngram in BLEU.make_ngrams(ref, N):
             if ngram not in counter:
                 counter[ngram] = 1
             else:
