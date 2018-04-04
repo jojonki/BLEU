@@ -42,17 +42,16 @@ def modified_precision(mt, refs, maxN=4, weights=None, epsilon=0.1):
                     max_ref_count = max(ref_counter[token], max_ref_count)
             clip_count += min(mt_count, max_ref_count)
         total = sum([ct for ct in mt_counter.values()])
-        Ps.append(Fraction(clip_count, total, _normalize=False))
-        # print('P_{} = {:.3f} ({}/{})'.format(N, Ps[-1], clip_count, total))
+        Ps.append(Fraction(clip_count, max(1, total), _normalize=False)) # ensures that denominator is minimum 1 to avoid ZeroDivisionError
 
     maxN = max(Ns)
     if weights is None:
         weights = [1 / maxN] * maxN
 
-    # smoothing. TODO use Fraction for better comparison
+    # nltk prepares various smoothing functions. I used method1 implementation.
+    # https://www.nltk.org/_modules/nltk/translate/bleu_score.html
     for i, p in enumerate(Ps):
         if p.numerator == 0:
-            # print('###', epsilon , p.denominator)
             Ps[i] = epsilon / p.denominator
 
     return math.fsum([weights[i] * math.log(p) for i, p in enumerate(Ps)])
@@ -77,9 +76,3 @@ def calc_bleu(mt, refs, maxN=4, weights=None):
     # refs_ngrams = [BLUE.make_ngrams(ref, maxN) for ref in refs]
     bp = brevity_penalty(mt, refs)
     return bp * math.exp(modified_precision(mt, refs, maxN, weights))
-
-# hypothesis = ['a'] * 12
-# hyp_len = len(hypothesis)
-# closest_ref_len =  closest_ref_length(references, hyp_len)
-# print(brevity_penalty(closest_ref_len, hyp_len))
-# # 0.2635971381157267
