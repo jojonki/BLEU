@@ -14,7 +14,8 @@ class BLEU:
             ngrams.append(' '.join(sentence[i:i+N]))
         return ngrams
 
-    def modified_precision(self, maxN, mt, refs):
+    @staticmethod
+    def modified_precision(maxN, mt, refs):
         Ns = range(1, maxN)
         Ps = []
         for N in Ns:
@@ -44,8 +45,22 @@ class BLEU:
                 clip_count += min(mt_count, max_ref_count)
             total = sum([ct for ct in mt_counter.values()])
             Ps.append(clip_count/total)
-            print('P_{} = {:.3f} ({}/{})'.format(N, Ps[-1], clip_count, total))
+            # print('P_{} = {:.3f} ({}/{})'.format(N, Ps[-1], clip_count, total))
 
         maxN = max(Ns)
-        return sum([math.log(p)/maxN for p in Ps])
         # print('Total P = {:.3f}'.format(sum([math.log(p)/maxN for p in Ps])))
+        return sum([math.log(p)/maxN for p in Ps])
+
+    @staticmethod
+    def brevity_penalty(mt, refs):
+        c = len(mt)
+        r = sum([len(ref) for ref in refs])
+        if c >= r:
+            return 1.0
+        else:
+            return math.exp(1.0 - r/c)
+
+    @staticmethod
+    def calc_bleu(maxN, mt, refs):
+        bp = BLEU.brevity_penalty(mt, refs)
+        return bp * math.exp(BLEU.modified_precision(maxN, mt, refs))
