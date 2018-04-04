@@ -1,4 +1,5 @@
 import sys
+import math
 import copy
 
 
@@ -14,7 +15,7 @@ while True:
 print('MT:', mt)
 print('Refs:', refs)
 
-Ns = [1, 2, 3]
+Ns = range(1, 4)
 
 
 def make_ngrams(sentence, N):
@@ -25,6 +26,7 @@ def make_ngrams(sentence, N):
     return ngrams
 
 
+Ps = []
 for N in Ns:
     mt_counter = {}
     for ngram in make_ngrams(mt, N):
@@ -52,4 +54,8 @@ for N in Ns:
                 max_ref_count = max(ref_counter[token], max_ref_count)
         clip_count += min(mt_count, max_ref_count)
     total = sum([ct for ct in mt_counter.values()])
-    print('P_{} = {} ({}/{})'.format(N, clip_count/total, clip_count, total))
+    Ps.append(clip_count/total)
+    print('P_{} = {:.3f} ({}/{})'.format(N, Ps[-1], clip_count, total))
+
+maxN = max(Ns)
+print('Total P = {:.3f}'.format(sum([math.log(p)/maxN for p in Ps])))
