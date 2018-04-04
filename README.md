@@ -21,4 +21,5 @@ corpus_bleu: 0.5045666840058485
 ```
 
 ## References
-[自動評価尺度 BLEU](http://www2.nict.go.jp/astrec-att/member/mutiyama/corpmt/4.pdf)
+- [BLEU: a Method for Automatic Evaluation of Machine Translation](https://www.aclweb.org/anthology/P02-1040.pdf)
+- [自動評価尺度 BLEU](http://www2.nict.go.jp/astrec-att/member/mutiyama/corpmt/4.pdf)
