@@ -9,7 +9,6 @@ class BLEU:
     @staticmethod
     def make_ngrams(sentence, N):
         ngrams = []
-        sentence = sentence.split(' ')
         for i in range(len(sentence) - N + 1):
             ngrams.append(' '.join(sentence[i:i+N]))
         return ngrams
@@ -52,9 +51,14 @@ class BLEU:
         return sum([math.log(p)/maxN for p in Ps])
 
     @staticmethod
+    def closest_ref_length(c, ref_lens):
+        return min(ref_lens, key=lambda ref_len: (abs(ref_len - c), ref_len))
+
+    @staticmethod
     def brevity_penalty(mt, refs):
-        c = len(mt)
-        r = sum([len(ref) for ref in refs])
+        c = len(BLEU.make_ngrams(mt, 1))
+        ref_lens = [len(BLEU.make_ngrams(ref, 1)) for ref in refs]
+        r = BLEU.closest_ref_length(c, ref_lens)
         if c >= r:
             return 1.0
         else:
@@ -62,5 +66,13 @@ class BLEU:
 
     @staticmethod
     def calc_bleu(maxN, mt, refs):
+        # mt_ngrams = BLUE.make_ngrams(mt, maxN)
+        # refs_ngrams = [BLUE.make_ngrams(ref, maxN) for ref in refs]
         bp = BLEU.brevity_penalty(mt, refs)
         return bp * math.exp(BLEU.modified_precision(maxN, mt, refs))
+
+# hypothesis = ['a'] * 12
+# hyp_len = len(hypothesis)
+# closest_ref_len =  closest_ref_length(references, hyp_len)
+# print(brevity_penalty(closest_ref_len, hyp_len))
+# # 0.2635971381157267

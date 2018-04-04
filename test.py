@@ -2,12 +2,12 @@ import math
 from bleu import BLEU
 
 
-mt = input()
+mt = input().split(' ')
 refs = []
 while True:
     try:
         ref = input()
-        refs.append(ref)
+        refs.append(ref.split(' '))
     except EOFError:
         break
 
